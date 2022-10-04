@@ -1,4 +1,7 @@
+import PropTypes from 'prop-types';
 import React from 'react';
+import Loading from '../components/Loading';
+import { createUser } from '../services/userAPI';
 
 class Login extends React.Component {
   constructor() {
@@ -6,8 +9,24 @@ class Login extends React.Component {
     this.state = {
       loginName: '',
       minChars: true,
+      loading: false,
     };
   }
+
+  // componentWillUnmount() {
+  //   this.handleUser();
+  // }
+
+  handleUser = async () => {
+    const { loginName } = this.state;
+    const { history } = this.props;
+    // console.log(await createUser({ name: loginName }));
+
+    this.setState({ loading: true });
+    await createUser({ name: loginName });
+    this.setState({ loading: false });
+    history.push('/search');
+  };
 
   handleDisableBtn = () => {
     const { loginName } = this.state;
@@ -18,7 +37,6 @@ class Login extends React.Component {
   };
 
   handleChange = ({ target: { name, value } }) => {
-    console.log(value);
     this.setState({
       [name]: value,
     }, () => this.handleDisableBtn());
@@ -26,32 +44,45 @@ class Login extends React.Component {
 
   render() {
     const {
-      loginName, minChars,
+      loginName, minChars, loading,
     } = this.state;
+
     return (
       <div data-testid="page-login">
         <p>TrybeTunes!</p>
-        <label htmlFor="login">
-          Login:
-          <input
-            type="text"
-            id="login"
-            name="loginName"
-            testid="login-name-input"
-            value={ loginName }
-            onChange={ this.handleChange }
-          />
-        </label>
-        <button
-          type="button"
-          data-testid="login-submit-button"
-          disabled={ minChars }
-        >
-          Entrar
-        </button>
+        { loading ? <Loading />
+          : (
+            <>
+              <label htmlFor="login">
+                Login:
+                <input
+                  type="text"
+                  id="login"
+                  name="loginName"
+                  data-testid="login-name-input"
+                  value={ loginName }
+                  onChange={ this.handleChange }
+                />
+              </label>
+              <button
+                type="button"
+                data-testid="login-submit-button"
+                disabled={ minChars }
+                onClick={ this.handleUser }
+              >
+                Entrar
+              </button>
+            </>
+          )}
       </div>
     );
   }
 }
+
+Login.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+};
 
 export default Login;

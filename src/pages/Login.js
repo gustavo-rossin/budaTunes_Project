@@ -49,7 +49,7 @@ class Login extends React.Component {
 
     return (
       <div data-testid="page-login">
-        <p>TrybeTunes!</p>
+        <h1>TrybeTunes!</h1>
         { loading ? <Loading />
           : (
             <>

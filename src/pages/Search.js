@@ -37,8 +37,8 @@ class Search extends React.Component {
     const api = await searchAlbumsAPI(searchBar);
     this.setState({ loading: false,
       albumInfo: api,
-      searchBar2: searchBar,
       searchBar: '',
+      searchBar2: searchBar,
     });
   };
 
@@ -81,13 +81,15 @@ class Search extends React.Component {
                   {
                     albumInfo.map((item) => (
                       <div key={ item.collectionId }>
-                        <img src={ item.artworkUrl100 } alt={ item.collectionName } />
-                        <h2>{item.collectionName}</h2>
-                        <h4>{item.artistName}</h4>
                         <Link
                           to={ `/album/${item.collectionId}` }
                           data-testid={ `link-to-album-${item.collectionId}` }
-                        />
+                        >
+                          <img src={ item.artworkUrl100 } alt={ item.collectionName } />
+                        </Link>
+
+                        <h2>{item.collectionName}</h2>
+                        <h4>{item.artistName}</h4>
                       </div>
                     ))
                   }

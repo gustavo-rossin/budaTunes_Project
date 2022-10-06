@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import Header from '../components/Header';
+import Loading from '../components/Loading';
 import MusicCard from '../components/MusicCard';
+import { addSong } from '../services/favoriteSongsAPI';
 import getMusics from '../services/musicsAPI';
 
 class Album extends React.Component {
@@ -9,6 +11,7 @@ class Album extends React.Component {
     super();
     this.state = {
       song: [],
+      loading: false,
     };
   }
 
@@ -25,8 +28,28 @@ class Album extends React.Component {
     this.setState({ song: api });
   };
 
+  fetchFav = async () => {
+    this.setState({ loading: true });
+
+    const { match: { params } } = this.props;
+    const fetchJSON = await JSON.stringify(params.id);
+    const fetchID = await JSON.parse(fetchJSON);
+    await addSong(fetchID);
+
+    this.setState({ loading: false });
+  };
+
+  // handleCheckBox = async ({ target }) => {
+  //   if (target.checked) {
+  //     this.setState({ loading: true });
+  //     this.setState({ loading: false });
+  //   } else {
+  //     this.setState({ loading: false });
+  //   }
+  // };
+
   render() {
-    const { song } = this.state;
+    const { song, loading } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
@@ -38,12 +61,15 @@ class Album extends React.Component {
           </div>
         ) : <p />}
         <br />
-        {/* ajuda monitoria do Thiago no filter com kind */}
+        { loading && <Loading /> }
+        {/* ajuda monitoria do Tiago no filter com kind */}
         {song.filter((element) => element.kind === 'song').map((item) => (
           <MusicCard
             key={ item.trackName }
             trackName={ item.trackName }
             previewUrl={ item.previewUrl }
+            trackId={ item.trackId }
+            favClick={ this.fetchFav }
           />
         ))}
       </div>

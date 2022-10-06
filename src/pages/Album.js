@@ -20,24 +20,29 @@ class Album extends React.Component {
   }
 
   fetchMusic = async () => {
+    this.setState({ loading: true });
     const { match: { params } } = this.props;
     const fetchJSON = await JSON.stringify(params.id);
     const fetchID = await JSON.parse(fetchJSON);
     const api = await getMusics(fetchID);
-    // console.log('1', await api);
-    this.setState({ song: api });
-  };
-
-  fetchFav = async () => {
-    this.setState({ loading: true });
-
-    const { match: { params } } = this.props;
-    const fetchJSON = await JSON.stringify(params.id);
-    const fetchID = await JSON.parse(fetchJSON);
     await addSong(fetchID);
-
-    this.setState({ loading: false });
+    // console.log('1', await api);
+    this.setState({ song: api,
+      loading: false,
+    });
   };
+  // * refatorei a questão 8, tirei a fetchFav pela fetchMusic, pois eram funcs muito parecidas.
+
+  // fetchFav = async () => {
+  //   this.setState({ loading: true });
+
+  //   const { match: { params } } = this.props;
+  //   const fetchJSON = await JSON.stringify(params.id);
+  //   const fetchID = await JSON.parse(fetchJSON);
+  //   await addSong(fetchID);
+
+  //   this.setState({ loading: false });
+  // };
 
   // handleCheckBox = async ({ target }) => {
   //   if (target.checked) {
@@ -69,7 +74,7 @@ class Album extends React.Component {
             trackName={ item.trackName }
             previewUrl={ item.previewUrl }
             trackId={ item.trackId }
-            favClick={ this.fetchFav }
+            favClick={ this.fetchMusic }
           />
         ))}
       </div>

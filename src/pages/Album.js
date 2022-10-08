@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
 import MusicCard from '../components/MusicCard';
-import { addSong } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
 import getMusics from '../services/musicsAPI';
 
 class Album extends React.Component {
@@ -12,11 +12,13 @@ class Album extends React.Component {
     this.state = {
       song: [],
       loading: false,
+      fav: [],
     };
   }
 
   componentDidMount() {
     this.fetchMusic();
+    this.fetchFavoriteSongs();
   }
 
   fetchMusic = async () => {
@@ -27,11 +29,36 @@ class Album extends React.Component {
     const api = await getMusics(fetchID);
     await addSong(fetchID);
     // console.log('1', await api);
-    this.setState({ song: api,
+    this.setState({
+      song: api,
       loading: false,
     });
   };
-  // * refatorei a questão 8, tirei a fetchFav pela fetchMusic, pois eram funcs muito parecidas.
+
+  fetchFavoriteSongs = async () => {
+    this.setState({ loading: true });
+    const apiFav = await getFavoriteSongs();
+    this.setState({ loading: false,
+      fav: apiFav });
+  };
+
+  handleChange = async ({ target }) => {
+    const { song } = this.state;
+    const findFavSong = song.find((el) => el.trackId === Number(target.name));
+
+    if (target.checked) {
+      this.setState({
+        loading: true,
+      });
+      await addSong(findFavSong);
+      this.setState((previous) => ({
+        fav: [...previous.fav, findFavSong],
+        loading: false,
+      }));
+    }
+  };
+
+  // * refatorei a questão 8, tirei a fetchFav e coloquei as infos dentro da fetchMusic, pois eram funcs muito parecidas.
 
   // fetchFav = async () => {
   //   this.setState({ loading: true });
@@ -44,17 +71,8 @@ class Album extends React.Component {
   //   this.setState({ loading: false });
   // };
 
-  // handleCheckBox = async ({ target }) => {
-  //   if (target.checked) {
-  //     this.setState({ loading: true });
-  //     this.setState({ loading: false });
-  //   } else {
-  //     this.setState({ loading: false });
-  //   }
-  // };
-
   render() {
-    const { song, loading } = this.state;
+    const { song, loading, fav } = this.state;
     return (
       <div data-testid="page-album">
         <Header />
@@ -74,7 +92,8 @@ class Album extends React.Component {
             trackName={ item.trackName }
             previewUrl={ item.previewUrl }
             trackId={ item.trackId }
-            favClick={ this.fetchMusic }
+            favChange={ this.handleChange }
+            favSongChecked={ fav.some((songs) => songs.trackId === item.trackId) }
           />
         ))}
       </div>

@@ -60,9 +60,11 @@ class Album extends React.Component {
         loading: true,
       });
       await removeSong(findFavSong);
+      // console.log(findFavSong);
+      // * erro na escrita do codigo, por isso n passava
       this.setState({
         loading: false,
-        fav: fav.filter((el) => el.trackID !== findFavSong.trackID),
+        fav: fav.filter((el) => findFavSong.trackId !== el.trackId),
       });
     }
   };

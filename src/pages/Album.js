@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
 import MusicCard from '../components/MusicCard';
-import { addSong, getFavoriteSongs } from '../services/favoriteSongsAPI';
+import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
 import getMusics from '../services/musicsAPI';
 
 class Album extends React.Component {
@@ -43,7 +43,7 @@ class Album extends React.Component {
   };
 
   handleChange = async ({ target }) => {
-    const { song } = this.state;
+    const { song, fav } = this.state;
     const findFavSong = song.find((el) => el.trackId === Number(target.name));
 
     if (target.checked) {
@@ -52,9 +52,18 @@ class Album extends React.Component {
       });
       await addSong(findFavSong);
       this.setState((previous) => ({
-        fav: [...previous.fav, findFavSong],
         loading: false,
+        fav: [...previous.fav, findFavSong],
       }));
+    } else {
+      this.setState({
+        loading: true,
+      });
+      await removeSong(findFavSong);
+      this.setState({
+        loading: false,
+        fav: fav.filter((el) => el.trackID !== findFavSong.trackID),
+      });
     }
   };
 

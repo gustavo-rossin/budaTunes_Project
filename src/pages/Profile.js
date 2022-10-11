@@ -23,10 +23,10 @@ class Profile extends React.Component {
     const user = await getUser();
     this.setState({ loading: false,
       user: {
-        name: 'Gustavo Rossin2313',
-        email: 'gustavo.rossin@hotmail.com',
+        name: user.name,
+        email: 'email@test.com',
         image: 'url-to-image',
-        description: 'oi, eu sou o goku',
+        description: 'Lorem ipsum',
       } });
   };
 
@@ -38,13 +38,13 @@ class Profile extends React.Component {
         { loading && <Loading /> }
         <div data-testid="page-profile">
           <br />
-          {user.name}
+          <span>{user.name}</span>
           <br />
-          {user.email}
+          <span>{user.email}</span>
           <br />
           <img src={ user.image } data-testid="profile-image" alt={ user.name } />
           <br />
-          {user.description}
+          <span>{user.description}</span>
           <br />
           <Link to="/profile/edit">Editar perfil</Link>
         </div>
